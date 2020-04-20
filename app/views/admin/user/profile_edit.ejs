@@ -1,0 +1,74 @@
+<%- include('../template/head'); -%>
+
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            User Profile Edit
+            <small>Here we do changes to user profile</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+            <li class="active">Here</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+
+        <div class="row">
+            <div class="col-md-offset-3 col-md-5">
+
+
+                <form method="post">
+                    <div class="form-group has-feedback">
+                        <input type="text" name="name" class="form-control" placeholder="Full Name" value="<%= old_name %>" >
+                        <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="text" name="username" class="form-control" placeholder="username" value="<%= old_username %>">
+                        <span class="glyphicon glyphicon-user form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="password" name="password" class="form-control" placeholder="Password" >
+                        <span class="glyphicon glyphicon-lock form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="password" class="form-control" placeholder="Retype password">
+                        <span class="glyphicon glyphicon-log-in form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <select name="role" id="" class="form-control">
+                            <option value="" <% if(old_role!==''){ %>selected<% } %> disabled></option>
+                            <option value="editor" <% if(old_role==='editor'){ %>selected<% } %>>Editor</option>
+                            <option value="marketer" <% if(old_role==='marketer'){ %>selected<% } %>>Marketer</option>
+                        </select>
+                        <span class="glyphicon glyphicon-star form-control-feedback"></span>
+                    </div>
+                    <div class="row">
+                        <!--<div class="col-md-6">-->
+                        <!--<div class="checkbox icheck">-->
+                        <!--<label>-->
+                        <!--<input type="checkbox"> I agree to the <a href="#">terms</a>-->
+                        <!--</label>-->
+                        <!--</div>-->
+                        <!--</div>-->
+                        <!-- /.col -->
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">Add User</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<%- include('../template/foot'); -%>

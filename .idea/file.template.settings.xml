@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ExportableFileTemplateSettings">
+    <code_templates>
+      <template name="React Class Component.jsx" reformat="true" live-template-enabled="true" enabled="true" />
+      <template name="React Functional Component.jsx" reformat="true" live-template-enabled="true" enabled="true" />
+      <template name="Typescript React Class Component.tsx" reformat="true" live-template-enabled="true" enabled="true" />
+      <template name="Typescript React Functional Component.tsx" reformat="true" live-template-enabled="true" enabled="true" />
+    </code_templates>
+  </component>
+</project>

@@ -1,0 +1,48 @@
+<%- include('../template/head'); -%>
+
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Material Registration
+            <small>Here we Register new Material</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+            <li class="active">Here</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+        <div class="row">
+            <p><%= msg %></p>
+        </div>
+
+      <div class="row">
+          <div class="col-md-offset-3 col-md-5">
+
+
+              <form method="post">
+                  <div class="form-group has-feedback">
+                      <input type="text" name="name" required class="form-control" placeholder="New Material Name" value="<%= old_name %>" >
+                      <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                  </div>
+                  <div class="row">
+                      <div class="col-md-4">
+                          <button type="submit" class="btn btn-primary btn-block btn-flat">Register New Material</button>
+                      </div>
+                  </div>
+              </form>
+
+          </div>
+      </div>
+
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<%- include('../template/foot'); -%>

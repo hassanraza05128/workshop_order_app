@@ -1,0 +1,56 @@
+ /*socket.emit("allmaterials");
+    socket.emit("allproducttypes");
+    socket.emit("allunits");
+    socket.emit("allparameters");*/
+    /*if (this.state.materialsData.length < 1) socket.emit("allmaterials");
+    if (this.state.producttypesData.length < 1) socket.emit("allproducttypes");
+    if (this.state.unitsData.length < 1) socket.emit("allunits");
+    if (this.state.parametersData.length < 1) socket.emit("allparameters");*/
+
+    /*    socket.on("allmaterials", d => this.state.materialsData= d );
+    socket.on("allproducttypes", d => this.state.producttypesData= d );
+    socket.on("allunits", d => this.state.unitsData= d );
+    socket.on("allparameters", d => this.state.parametersData= d );*/
+
+
+
+
+
+
+     {/* */}
+
+
+
+                {/*<Table
+                  tableHeaderColor="warning"
+                  tableHead={[
+                    "ProductID",
+                    "content",
+                    "Name",
+                    "PriceBy",
+                    "Actions"
+                  ]}
+                  tableData={this.state.searchedproducts.map(p => {
+                    return [
+                      p.designid,
+                      <img
+                        style={{ maxHeight: "50px", maxWidth: "50px" }}
+                        src={"http://localhost:3000/" + p.contents[0].fullpath}
+                        alt={p.contents[0].orignalname}
+                        className="slick-image"
+                      />,
+                      p.name,
+                      p.sellby.by,
+                        <ProductDetailsModel.jsx contents={tileData} />
+                    ];
+                  })}
+                />
+                <Button variant={"outlined"}>actions</Button>*/}
+
+
+{/*<TextField*/}
+          {/*  onChange={()=>{}}*/}
+          {/*  label={"Date Promising :"}*/}
+          {/*  InputLabelProps={{error:false, required:true, variant:"standard"}}*/}
+          {/*/>*/}
+

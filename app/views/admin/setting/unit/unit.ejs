@@ -1,0 +1,335 @@
+<%- include('../../template/head'); -%>
+<style type="text/css">
+/* no-gutters Class Rules */
+.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+}
+.no-gutters > [class^="col-"],
+.no-gutters > [class*=" col-"] {
+    padding-right: 0;
+    padding-left: 0;
+}
+</style>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>Unit Settings
+            <small>Here we can see all registered Units</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+            <li class="active">Here</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content ">
+        <div class="row" id="msg">
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                    <!--<h3 class="box-title "></h3>-->
+                        <div class=" col-md-offset-4 col-md-2">
+                            <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#newformModel" >Add new</button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body  ">
+
+                        <table id="exampleajax" class="table  table-responsive table-hover ">
+                            <thead>
+
+                                <tr>
+                                    <th>Srno</th>
+                                    <th>unitid</th>
+                                    <th>Text</th>
+                                    <th>Symbol</th>
+                                    <th>Quantity</th>
+                                    <th>(*)Factor</th>
+                                    <th>Actions</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="productTable">
+
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Srno</th>
+                                    <th>unitid</th>
+                                    <th>Text</th>
+                                    <th>Symbol</th>
+                                    <th>Quantity</th>
+                                    <th>(*)Factor</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                    <!-- /.box -->
+            </div>
+        </div>
+    </section>
+
+<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+
+
+
+
+
+<script>
+    var tableajaxUrl='/admin/unitsajax';
+    var formUrl='/admin/unitregajax';
+    var formEditUrl='/admin/unitupdateajax';
+    var delUrl='/admin/unitactionajax';
+
+    $(document).ready(function() {
+        var newModel=$('#newformModel');
+        var newForm=$('#newform');
+        var updateForm=$('#updateform');
+        var upModel=$('#formModelUpdate');
+        var ajaxActoins=function (id,action) {
+            $.ajax({
+                url: delUrl,
+                type: 'POST',
+                async: true,
+                data: {unitid:id,action:action},
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $('#msg').html('<div class="alert alert-error alert-dismissable fade in">'+
+                        jqXHR.responseJSON.msg+'</div>');
+                },
+                success: function(data, textStatus, jqXHR){
+                    $('#msg').html('<div class="alert alert-success alert-dismissable fade in">'+data.msg+'</div>');
+                    ajaxtable.ajax.reload();
+                },
+            });
+        };
+        // if (form.checkValidity()){
+        //     inputs=pform.serializeArray();
+        //     $.each(inputs, function (i, input) {
+        //         formObj[input.name] = input.value;
+        //     });
+        // }
+
+        newForm.on('submit',function (e) {
+            e.preventDefault();
+            var form=newModel.find('form');
+            var formObj={};
+            if (form[0].checkValidity()){
+                var inputs=form.serializeArray();
+                $.each(inputs, function (i, input) {
+                    formObj[input.name] = input.value;
+                });
+                $.ajax({
+                    url: formUrl,
+                    type: 'post',
+                    async: true,
+                    data: formObj,
+                    error: function(jqXHR, textStatus, errorThrown) {
+                       if(jqXHR.responseJSON!==undefined) newModel.find('div.msg').html('<div class="alert alert-error alert-dismissible fade in">'+
+                            jqXHR.responseJSON.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                           '  <span aria-hidden="true">&times;</span>\n' +
+                           '</button></div>');
+                    },
+                    success: function(data, textStatus, jqXHR){
+                        if(data.hasOwnProperty('msg'))
+                        newModel.find('div.msg').html('<div class="alert alert-success alert-dismissible fade in">'+data.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                            '  <span aria-hidden="true">&times;</span>\n' +
+                            '</button></div>');
+                        ajaxtable.ajax.reload();
+                    },
+                });
+            }else{newModel.find('.msg').html('<div class="alert alert-error alert-dismissible fade in">Form Not Valid<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                '  <span aria-hidden="true">&times;</span>\n' +
+                '</button></div>');}
+        });
+
+        $('#exampleajax tbody').on( 'click', 'button.update', function () {
+            var data = ajaxtable.row( $(this).parents('tr') ).data();
+            var inputs=upModel.find('form input');
+            
+            var input_quantity=upModel.find('form select[name="unitof"]').get(0);
+
+            inputs[0].value=data[1];
+            inputs[1].value=data[2];
+            inputs[2].value=data[3];
+            input_quantity.value=data[4];
+            inputs[3].value=data[5];
+
+            // inputs.each(function (index) {
+            //     this.value=data[1+index];
+            // });
+
+            upModel.modal('show');
+        });
+        updateForm.on('submit',function (e) {
+            e.preventDefault();
+
+            var form=upModel.find('form');
+            var formObj={};
+            if (form[0].checkValidity()){
+                var inputs=form.serializeArray();
+                $.each(inputs, function (i, input) {
+                    formObj[input.name] = input.value;
+                });
+                $.ajax({
+                    url: formEditUrl,
+                    type: 'post',
+                    async: true,
+                    data: formObj,
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        if(jqXHR.responseJSON!==undefined) upModel.find('div.msg').html('<div class="alert alert-error alert-dismissable fade in">'+
+                            jqXHR.responseJSON.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                            '  <span aria-hidden="true">&times;</span>\n' +
+                            '</button></div>');
+                    },
+                    success: function(data, textStatus, jqXHR){
+                        if(data.hasOwnProperty('msg'))
+                            upModel.find('div.msg').html('<div class="alert alert-success alert-dismissible fade in">'+data.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                                '  <span aria-hidden="true">&times;</span>\n' +
+                                '</button></div>');
+                        ajaxtable.ajax.reload();
+                    },
+                });
+            }else{newModel.find('.msg').html('<div class="alert alert-error alert-dismissible fade in">Form Not Valid<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                '  <span aria-hidden="true">&times;</span>\n' +
+                '</button></div>');}
+        });
+
+        $('#exampleajax tbody').on( 'click', 'button.delete', function () {
+            var data = ajaxtable.row( $(this).parents('tr') ).data();
+            ajaxActoins(data[1],'delete');
+        });
+        $('#exampleajax tbody').on( 'click', 'button.restore', function () {
+            var data = ajaxtable.row( $(this).parents('tr') ).data();
+            ajaxActoins(data[1],'restore');
+        });
+    });
+</script>
+
+<!-- Modal -->
+<div class=" modal " id="newformModel" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" >
+
+        <!-- Modal content-->
+        <div class=" modal-content ">
+            <div class="modal-header ">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">New</h4>
+                <div class="msg"></div>
+            </div>
+            <div class="modal-body ">
+                <form id="newform">
+                    <div class="form-group has-feedback">
+                        <input type="text" name="text" required class="form-control" placeholder="text"  >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="text" name="symbol" required class="form-control" placeholder="symbol"  >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <select name="unitof" required class="form-control" >
+                            <option value="length">Length</option>
+                            <option value="mass">Mass</option>
+                        </select>
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="text" name="efactor" required class="form-control" placeholder="(*)factor"  >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+
+                <button class="btn btn-primary " type="submit" id="newButtonInModel">Add New</button>
+                </form>
+            </div>
+            <div class="modal-footer modal-close">
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="formModelUpdate" role="dialog">
+    <div class="modal-dialog " >
+
+        <!-- Modal content-->
+        <div class=" modal-content ">
+            <div class="modal-header ">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Update</h4>
+                <div class="msg"></div>
+            </div>
+            <div class="modal-body ">
+                <form id="updateform">
+                    <input type="hidden" name="unitid">
+                    <div class="form-group has-feedback">
+                        <input type="text" name="text" required class="form-control" >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="text" name="symbol" required class="form-control" >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <select name="unitof" required class="form-control" >
+                            <option value="length">Length</option>
+                            <option value="mass">Mass</option>
+                        </select>
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <input type="text" name="efactor" required class="form-control"  >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+
+                    <button class="btn btn-primary " type="submit" id="updateButtonInModel">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer modal-close"></div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var ajaxtable = $('#exampleajax').DataTable({
+        "ajax": tableajaxUrl,
+        // "columns": [
+        //     { "data": "_id" },
+        //     { "data": "text" },
+        //     { "data": "symbol" },
+        //     { "data": "unitof" },
+        //     { "data": "type" },
+        // ],
+        columnDefs:[
+            {
+                "targets": [ 1 ],
+                "visible": false,
+                "searchable": false
+            },
+            //  {
+            //     "targets": -1,
+            //     "data": null,
+            //     "defaultContent": "<button class='update'>update</button><button class='delete'>Delete</button>"
+            // }
+        ],
+    });
+
+</script>
+    <%- include('../../template/foot'); -%>

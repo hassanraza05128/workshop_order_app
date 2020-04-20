@@ -1,0 +1,201 @@
+<%- include('../template/head'); -%>
+<style type="text/css">
+/* no-gutters Class Rules */
+.no-gutters {
+   margin-right: 0;
+   margin-left: 0;
+}
+.no-gutters > [class^="col-"],
+.no-gutters > [class*=" col-"] {
+   padding-right: 0;
+   padding-left: 0;
+}
+</style>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Product List
+            <small>Here we can see all registered Product</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+            <li class="active">Here</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content ">
+        <div class="row" id="msg">
+            <%if(error.name){%><div class="alert alert-error alert-dismissable"><%=error.name+' : '+error.message%></div><%}%>
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <!--<h3 class="box-title "></h3>-->
+
+                    </div>
+                    <%if(!redirect_error){%><div class="alert alert-dismissable <%= (!redirect_error)?'alert-error':'alert-info' %>"><%= redirect_msg %></div><%}%>
+                    <!-- /.box-header -->
+                    <div class="box-body  ">
+                        <div class="col-md-offset-3 col-md-5">
+                            <input class="form-control" id="searchmyInput" type="text" placeholder="Search..">
+                        </div>
+                        <table id="example2" class="table  table-responsive table-hover ">
+                            <thead>
+                            <tr>
+                                <th>Sr no</th>
+                                <th>DesignID</th>
+                                <th>Name</th>
+                                <th>Material</th>
+                                <th>Type</th>
+                                <th>discription</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="productTable">
+                            <% var i=0; %>
+                            <% table.forEach(function(product){  %>
+                            <tr class="text-capitalize">
+                                <td><%= ++i %></td>
+                                <td><%= product.designid %></td>
+                                <td><%= product.name %></td>
+                                <td><%= product.material.name %></td>
+                                <td><%= product.type.name %></td>
+                                <td style="max-width: 200px; word-wrap: break-word;" ><%= product.discription %></td>
+                                <td>
+<!--//      content Gallary Model button ................................-->
+                                    <%if(product.contents.length){%>
+                                    <button type="button" class="btn btn-navigate btn-info " data-toggle="modal" data-target="#ModelContentGallary<%= i %>">Contents</button>
+                                    <%}else{%>
+                                    <button type="button" class="btn btn-navigate btn-info disabled">Contents</button>
+                                    <%}%>
+<!--//      /content Gallary Model button ...............................-->
+
+<!--//   status button...........................-->
+                                    <!--<% if(product.status==='active'){ %>-->
+                                    <!--<a href="/admin/productstatus?id=<%= product._id %>" id="statusbtn" class="btn btn-primary" >-->
+                                        <!--active-->
+                                    <!--</a>-->
+                                    <!--<% }else{ %>-->
+                                    <!--<a href="/admin/productstatus?id=<%= product._id %>" id="statusbtn" class="btn btn-warning" >-->
+                                        <!--deactive-->
+                                    <!--</a>-->
+                                    <!--<% } %>-->
+ <!--//     /status button .............................-->
+<!--//      update button ................................-->
+                                    <%if (!product.deleted){ %>
+                                    <a href="/admin/productupdate?id=<%= product._id %>" id="updatebtn" class="btn btn-default" >
+                                        update
+                                    </a>
+                                    <% } %>
+<!--//      update button ...............................-->
+<!--//      update button ................................-->
+                                    <% if(product.deleted){%>
+                                    <a href="/admin/productrestore?id=<%= product._id %>" id="restorebtn" class="btn btn-warning " >
+                                        Restore
+                                    </a>
+                                    <% }else{ %>
+                                    <a href="/admin/productdelete?id=<%= product._id %>" id="deletebtn" class="btn btn-danger" >
+                                        delete
+                                    </a>
+                                    <% } %>
+<!--//      update button ................................-->
+                                </td>
+                            </tr>
+                            <% }); %>
+
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th></th>
+                                <th>DesignID</th>
+                                <th>Name</th>
+                                <th>Material</th>
+                                <th>Type</th>
+                                <th>discription</th>
+                                <th>Actions</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </section>
+
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+    <% var i=0; table.forEach(function(product){++i;if(product.contents.length){  %>
+    <!-- Modal -->
+    <div class="modal" style="z-index:1041"  id="ModelContentGallary<%= i%>" role="dialog">
+        <div class="modal-dialog modal-lg modal-dialog-centered" >
+
+            <!-- Modal content-->
+            <div class=" modal-content ">
+                <div class="modal-header ">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Content Gallary</h4>
+                </div>
+                <div class="modal-body ">
+                    <div id="lightgallery"  class="lightGallery">
+                        <% if(product.contents.length)product.contents.forEach((content,j)=>{ %>
+                        
+                            <a href="<%=siteUrl+content.fullpath%>" >
+                              <img  src="<%=siteUrl+content.path+content.thumb%>" title="<%=content.originalname%>"   class="col-xs-4" />
+                            </a>
+
+                        <%});%>
+                    </div>
+                </div>
+                <div class="modal-footer modal-close">
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <%}});%>
+
+
+
+<script>
+
+    $(document).ready(function(){
+        function searchTable() {
+            var value = $(this).val().toLowerCase();
+            $("#productTable tr").filter(function() {
+                $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1);
+            });
+        };
+        $("#searchmyInput").on("keyup", searchTable);
+    });
+
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function() {
+        $(".lightGallery").lightGallery({
+            fullScreen:true,
+            zoom:true,
+            thumbnail:false,
+            animateThumb: true,
+            showThumbByDefault: false,
+            // hash:true,
+            // galleryId:1,
+        }); 
+    });
+</script>
+
+
+
+
+<%- include('../template/foot'); -%>

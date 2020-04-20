@@ -1,0 +1,443 @@
+<%- include('../template/head'); -%>
+<style type="text/css">
+    /* no-gutters Class Rules */
+    .no-gutters {
+        margin-right: 0;
+        margin-left: 0;
+    }
+    .no-gutters > [class^="col-"],
+    .no-gutters > [class*=" col-"] {
+        padding-right: 0;
+        padding-left: 0;
+    }
+</style>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>ProductType Settings
+            <small>Here we can see all registered ProductTypes</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+            <li class="active">Here</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content ">
+        <div class="row" id="msg">
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                        <!--<h3 class="box-title "></h3>-->
+                        <div class=" col-md-offset-4 col-md-2">
+                            <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#newformModel" >Add new</button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body  ">
+
+                        <table id="exampleajax" class="table  table-responsive table-hover ">
+                            <thead>
+
+                            <tr>
+                                <th>Srno</th>
+                                <th>paraid</th>
+                                <th>Name</th>
+                                <th>parentid</th>
+                                <th>Parent</th>
+                                <th>Code</th>
+                                <th>Actions</th>
+                            </tr>
+                            </thead>
+                            <tbody id="productTable">
+                            </tbody>
+                            <tfoot>
+                            <tr>
+                                <th>Srno</th>
+                                <th>paraid</th>
+                                <th>Name</th>
+                                <th>parentid</th>
+                                <th>Parent</th>
+                                <th>Code</th>
+                                <th>Actions</th>
+                            </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                <!-- /.box -->
+            </div>
+        </div>
+    </section>
+
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+
+<!-- Modal -->
+<div class=" modal " id="newformModel" role="dialog">
+    <div class="modal-dialog modal-md modal-dialog-centered" >
+
+        <!-- Modal content-->
+        <div class=" modal-content ">
+            <div class="modal-header ">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">New</h4>
+                <div class="msg"></div>
+            </div>
+            <div class="modal-body ">
+                <div class="form-group has-feedback" >
+                 <label >Select Parent Type : </label>
+                <select class="parentSelect" required class="form-control" style="width:fit-content" >
+                </select>
+                <div class="cblock" style="display:inline-flex"></div>
+            </div>
+                <form id="newform" class="form-horizontal" >
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="name" required class="form-control" placeholder="Name"  >
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="col-sm-2 control-label">Is Leaf:</label>
+                        <div class="col-sm-10">
+                        <select name="isleaf" id="isleaf" required class="form-control" >
+                            <option value="false" selected>Not A Leaf Node</option>
+                            <option value="true">Is A leaf Node</option>
+                        </select>
+                        </div>
+                    </div>
+                    <div id="iscode"></div>
+                   <div class="text-center">
+                       <button class="btn btn-primary " type="submit" id="newButtonInModel">Add New</button>
+                       <button class="btn btn-success " type="reset">Reset</button>
+                   </div>
+                </form>
+            </div>
+            <div class="modal-footer modal-close">
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="formModelUpdate" role="dialog">
+    <div class="modal-dialog " >
+
+        <!-- Modal content-->
+        <div class=" modal-content ">
+            <div class="modal-header ">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Update</h4>
+                <div class="msg"></div>
+            </div>
+            <div class="modal-body ">
+                <form id="updateform">
+                  <input type="hidden" required="" name="aid">
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">Name:</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="name" required class="form-control" placeholder="Name"  >
+                        </div>
+                    </div>
+                    <div class="form-group ">
+                        <label class="col-sm-2 control-label">Is Leaf:</label>
+                        <div class="col-sm-10">
+                            <select name="isleaf" id="isleaf" required class="form-control" >
+                                <option value="false" selected>Not A Leaf Node</option>
+                                <option value="true">Is A leaf Node</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div id="iscode"></div>
+                    <div class="text-center">
+                        <button class="btn btn-primary " type="submit" id="updateButtonInModel">Add New</button>
+                    </div>
+
+
+
+
+
+
+
+
+
+                   <!-- <div class="form-group has-feedback">
+                        <input type="text" name="name" required class="form-control" placeholder="Name"  >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <select name="quantity" id="" required class="form-control" >
+                            <option value="length">Length</option>
+                            <option value="mass" >Mass</option>
+                        </select>
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+
+                    <button class="btn btn-primary " type="submit" id="updateButtonInModel">Update</button>-->
+                </form>
+            </div>
+            <div class="modal-footer modal-close"></div>
+
+        </div>
+
+    </div>
+</div>
+
+
+<script>
+  function addCBlockForProductTypesLeafSelect(childs){
+    let htmlcontent='';
+    if(childs.length>0){
+      htmlcontent='<option></option>';
+    }else{
+      htmlcontent = '<span style="display:inline-flex;width:fit-content" >No Child</span>';
+      return htmlcontent;
+    }
+    let htmlhead='<select class="parentSelect" required class="form-control" style="width:fit-content" >';
+    htmlcontent += childs.map((p)=>{return '<option value="'+p._id+'">'+p.name+'</option>'}).join("");
+    let htmlFotter='</select><div class="cblock" style="display:inline-flex;width:fit-content"></div>';
+    return   htmlhead+htmlcontent+htmlFotter ;
+  }
+</script>
+
+
+
+<script>
+  var tableajaxUrl='/admin/producttypes_ajax';
+  var formUrl='/admin/producttype_reg_ajax';
+  var formEditUrl='/admin/producttype_update_ajax';
+  var delUrl='/admin/producttype_action_ajax';
+  var ProdTypeCallUrl='/admin/producttypes_child_list_ajax';
+
+  var parentSelectInnerBlockCurrent;
+  var ProductTypeParentSelectedCurrent;
+
+  $(document).ready(function() {
+    var newModel=$('#newformModel');
+    var newForm=$('#newform');
+    var updateForm=$('#updateform');
+    var upModel=$('#formModelUpdate');
+
+    $.ajax({// fault call for producttypes root nodes
+      url: ProdTypeCallUrl,
+      type: 'post',
+      async: true,
+      data: {pid:""},
+      success: function(data, textStatus, jqXHR){
+        // console.log('data',data);
+        if(data.hasChilds===true){
+          let htmlcontent='<option></option>'
+          htmlcontent += data.childs.map((p)=>{return '<option value="'+p._id+'">'+p.name+'</option>'}).join("");
+          $(".parentSelect").html($.parseHTML(htmlcontent));
+        }
+      },
+    });
+    var parentSelectEventTriggerer = function() {
+      let select=this;
+      parentSelectInnerBlockCurrent=$(this).next(".cblock");
+      if(select.value){
+        ProductTypeParentSelectedCurrent=select.value;
+      $.ajax({
+        url: ProdTypeCallUrl,
+        type: 'post',
+        async: true,
+        data: {pid:select.value},
+        error: function(jqXHR, textStatus, errorThrown) {
+          var error = jqXHR.responseJSON || jqXHR.responseText;
+          if(!error.message)console.log('ere',error);
+          if(textStatus=='error')
+            newModel.find('div.msg').html('<div class="alert alert-error alert-dismissible fade in">'+
+              errorThrown+' : '+error.message +'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+              '  <span aria-hidden="true">&times;</span>\n' +
+              '</button></div>');
+        },
+        success: function(data, textStatus, jqXHR){
+          // console.log('data',data);//should not be a leaf;
+          if(!data.hasChilds){
+            parentSelectInnerBlockCurrent
+              .html("").ProductTypeParentSelectedCurrent=select.value;/*alert("Selected");*/}
+          else{
+            parentSelectInnerBlockCurrent
+              .html($.parseHTML( addCBlockForProductTypesLeafSelect(data.childs)))
+              .find("Select").on('change',parentSelectEventTriggerer);
+            ProductTypeParentSelectedCurrent=undefined;
+          }
+        },
+      });
+      }else {ProductTypeParentSelectedCurrent=undefined;parentSelectInnerBlockCurrent.html("");}
+    };
+    $(".parentSelect").on('change',parentSelectEventTriggerer);
+    $("#isleaf").on("change",function(){
+      let htmlText='<div class="form-group" >'
+        +'<label class="col-sm-2 control-label" >CODE</label>'
+        +'<div class="col-sm-10">'
+        +'<input type="text" name="code" required class="form-control" placeholder="####" maxlength="4" minlength="4" >'
+        + '</div>'
+        + '</div>';
+      let html=$.parseHTML(htmlText);
+
+      let cb=$("#iscode");
+      if(cb.is(':empty') && this.value==="true")
+        cb.html(html);
+      else
+        cb.html("");
+    });
+
+
+    var ajaxActoins=function (id,action) {
+      $.ajax({
+        url: delUrl,
+        type: 'POST',
+        async: true,
+        data: {aid:id,action:action},
+        error: function(jqXHR, textStatus, errorThrown) {
+          $('#msg').html('<div class="alert alert-error alert-dismissable fade in">'+
+            jqXHR.responseJSON.msg+'</div>');
+        },
+        success: function(data, textStatus, jqXHR){
+          $('#msg').html('<div class="alert alert-success alert-dismissable fade in">'+data.msg+'</div>');
+          ajaxtable.ajax.reload();
+        },
+      });
+    };
+    newForm.on('submit',function (e) {
+      e.preventDefault();
+      var form=newModel.find('form');
+      var formObj={};
+      if (form[0].checkValidity()){
+        var inputs=form.serializeArray();
+        $.each(inputs, function (i, input) {
+          formObj[input.name] = input.value;
+        });
+        var data = Object.assign(formObj,{parent:ProductTypeParentSelectedCurrent});
+        // console.log("data to send",data);
+        if(ProductTypeParentSelectedCurrent===undefined)
+          alert("select ParentType Parent Category");
+        else
+        $.ajax({
+          url: formUrl,
+          type: 'post',
+          async: true,
+          data:data ,
+          error: function(jqXHR, textStatus, errorThrown) {
+
+            var error = jqXHR.responseJSON || jqXHR.responseText;
+            if(!error.message)console.log('ere',error);
+            if(textStatus=='error')
+              newModel.find('div.msg').html('<div class="alert alert-error alert-dismissible fade in">'+
+                errorThrown+' : '+error.message +'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                '  <span aria-hidden="true">&times;</span>\n' +
+                '</button></div>');
+          },
+          success: function(data, textStatus, jqXHR){
+            if(data.hasOwnProperty('message'))
+              newModel.find('div.msg').html('<div class="alert alert-success alert-dismissible fade in">'+data.message+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                '  <span aria-hidden="true">&times;</span>\n' +
+                '</button></div>');
+            ajaxtable.ajax.reload();
+          },
+        });
+      }else{newModel.find('.msg').html('<div class="alert alert-error alert-dismissible fade in">Form Not Valid<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+        '  <span aria-hidden="true">&times;</span>\n' +
+        '</button></div>');}
+    });
+
+    $('#exampleajax tbody').on( 'click', 'button.update', function () {
+      var data = ajaxtable.row( $(this).parents('tr') ).data();
+      var inputs=upModel.find('form input');
+      // inputs.each(function (index) {this.value=data[2+index];});
+      // alert(data);
+      updateForm.find('input[name="aid"]').val(data[1]);   //aid
+      updateForm.find('input[name="name"]').val(data[2]);   //name
+      updateForm.find('select[name="quantity"]').val(data[3]);  //quantity
+      // updateForm.find('select option[value="'+data[1]+'"]').attr("selected",true);
+      upModel.modal('show');
+    });
+    updateForm.on('submit',function (e) {
+      e.preventDefault();
+      var form=upModel.find('form');
+      var formObj={};
+      if (form[0].checkValidity()){
+        var inputs=form.serializeArray();
+        $.each(inputs, function (i, input) {
+          formObj[input.name] = input.value;
+        });
+        $.ajax({
+          url: formEditUrl,
+          type: 'post',
+          async: true,
+          data: formObj,
+          error: function(jqXHR, textStatus, errorThrown) {
+            if(jqXHR.responseJSON!==undefined) upModel.find('div.msg').html('<div class="alert alert-error alert-dismissable fade in">'+
+              jqXHR.responseJSON.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+              '  <span aria-hidden="true">&times;</span>\n' +
+              '</button></div>');
+          },
+          success: function(data, textStatus, jqXHR){
+            if(data.hasOwnProperty('msg'))
+              upModel.find('div.msg').html('<div class="alert alert-success alert-dismissible fade in">'+data.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                '  <span aria-hidden="true">&times;</span>\n' +
+                '</button></div>');
+            ajaxtable.ajax.reload();
+          },
+        });
+      }else{newModel.find('.msg').html('<div class="alert alert-error alert-dismissible fade in">Form Not Valid<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+        '  <span aria-hidden="true">&times;</span>\n' +
+        '</button></div>');}
+    });
+
+    $('#exampleajax tbody').on( 'click', 'button.delete', function () {
+      var data = ajaxtable.row( $(this).parents('tr') ).data();
+      ajaxActoins(data[2],'delete');
+    });
+    $('#exampleajax tbody').on( 'click', 'button.restore', function () {
+      var data = ajaxtable.row( $(this).parents('tr') ).data();
+      ajaxActoins(data[2],'restore');
+    });
+  });
+</script>
+
+
+<script>
+  var ajaxtable = $('#exampleajax').DataTable({
+    "ajax": tableajaxUrl,
+    // "columns": [
+    //     { "data": "_id" },
+    //     { "data": "text" },
+    //     { "data": "symbol" },
+    //     { "data": "unitof" },
+    //     { "data": "type" },
+    // ],
+    columnDefs:[
+      {
+        "targets": [ 1 ],
+        "visible": false,
+        "searchable": false
+      },
+      {
+          "targets": [ 3 ],
+          "visible": false,
+          "searchable": false
+      },
+      //  {
+      //     "targets": -1,
+      //     "data": null,
+      //     "defaultContent": "<button class='update'>update</button><button class='delete'>Delete</button>"
+      // }
+    ],
+  });
+
+</script>
+<%- include('../template/foot'); -%>

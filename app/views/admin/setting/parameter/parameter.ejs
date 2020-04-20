@@ -1,0 +1,333 @@
+<%- include('../../template/head'); -%>
+<style type="text/css">
+/* no-gutters Class Rules */
+.no-gutters {
+    margin-right: 0;
+    margin-left: 0;
+}
+.no-gutters > [class^="col-"],
+.no-gutters > [class*=" col-"] {
+    padding-right: 0;
+    padding-left: 0;
+}
+</style>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>Parameter Settings
+            <small>Here we can see all registered Parameters</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+            <li class="active">Here</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content ">
+        <div class="row" id="msg">
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                    <!--<h3 class="box-title "></h3>-->
+                        <div class=" col-md-offset-4 col-md-2">
+                            <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#newformModel" >Add new</button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body  ">
+
+                        <table id="exampleajax" class="table  table-responsive table-hover ">
+                            <thead>
+
+                                <tr>
+                                    <th>Srno</th>
+                                    <th>paraid</th>
+                                    <th>Name</th>
+                                    <th>Quantity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="productTable">
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Srno</th>
+                                    <th>paraid</th>
+                                    <th>Name</th>
+                                    <th>Quantity</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                    <!-- /.box -->
+            </div>
+        </div>
+    </section>
+
+<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+
+<!-- Modal -->
+<div class=" modal " id="newformModel" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" >
+
+        <!-- Modal content-->
+        <div class=" modal-content ">
+            <div class="modal-header ">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">New</h4>
+                <div class="msg"></div>
+            </div>
+            <div class="modal-body ">
+                <form id="newform">
+                    <div class="form-group has-feedback">
+                        <input type="text" name="name" required class="form-control" placeholder="Name"  >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <select name="quantity" id="" required class="form-control" >
+                            <option value="length">Length</option>
+                            <option value="mass">Mass</option>
+                        </select>
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+
+                    <button class="btn btn-primary " type="submit" id="newButtonInModel">Add New</button>
+                </form>
+            </div>
+            <div class="modal-footer modal-close">
+
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal" id="formModelUpdate" role="dialog">
+    <div class="modal-dialog " >
+
+        <!-- Modal content-->
+        <div class=" modal-content ">
+            <div class="modal-header ">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Update</h4>
+                <div class="msg"></div>
+            </div>
+            <div class="modal-body ">
+                <form id="updateform">
+                    <input type="hidden" required="" name="aid">
+                    <div class="form-group has-feedback">
+                        <input type="text" name="name" required class="form-control" placeholder="Name"  >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <select name="quantity" id="" required class="form-control" >
+                            <option value="length">Length</option>
+                            <option value="mass" >Mass</option>
+                        </select>
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+
+                    <button class="btn btn-primary " type="submit" id="updateButtonInModel">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer modal-close"></div>
+
+        </div>
+
+    </div>
+</div>
+
+
+
+
+
+
+<script>
+    var tableajaxUrl='/admin/parameters_ajax';
+    // var unitsajaxUrl='/admin/unitsajax';
+    var formUrl='/admin/parameter_reg_ajax';
+    var formEditUrl='/admin/parameter_update_ajax';
+    var delUrl='/admin/parameter_action_ajax';
+
+    $(document).ready(function() {
+        var newModel=$('#newformModel');
+        var newForm=$('#newform');
+        var updateForm=$('#updateform');
+        var upModel=$('#formModelUpdate');
+        // $.ajax({
+        //     url: unitsajaxUrl,
+        //     type: 'GET',
+        //     async: true,
+        //     //data: {_:"unitscall"},
+        //     error: function(jqXHR, textStatus, errorThrown) {
+        //         if(jqXHR.responseJSON!==undefined)
+        //             $('#msg').html('<div class="alert alert-error alert-dismissable fade in">'+
+        //             jqXHR.responseJSON.msg+'</div>');
+        //     },
+        //     success: function(data, textStatus, jqXHR){
+        //         if(data.hasOwnProperty('msg'))
+        //             {$('#msg').html('<div class="alert alert-success alert-dismissable fade in">'+data.msg+'</div>');}
+        //         else if(data.hasOwnProperty('data')) {
+        //             var optionStr = '';
+        //             data.data.forEach((value)=>{optionStr += '<option value="' + value[1] + '">' + value[2] + ' - ' + value[3] + '</option>'});
+        //             // console.log('unitblock', newForm.find('[name="unit"]'));
+        //             // console.log('optionstr', optionStr);
+        //             updateForm.find('[name="unit"]').html(optionStr);
+        //             newForm.find('[name="unit"]').html(optionStr);
+        //         }
+
+        //     },
+        // });
+
+        var ajaxActoins=function (id,action) {
+            $.ajax({
+                url: delUrl,
+                type: 'POST',
+                async: true,
+                data: {aid:id,action:action},
+                error: function(jqXHR, textStatus, errorThrown) {
+                    $('#msg').html('<div class="alert alert-error alert-dismissable fade in">'+
+                        jqXHR.responseJSON.msg+'</div>');
+                },
+                success: function(data, textStatus, jqXHR){
+                    $('#msg').html('<div class="alert alert-success alert-dismissable fade in">'+data.msg+'</div>');
+                    ajaxtable.ajax.reload();
+                },
+            });
+        };
+        newForm.on('submit',function (e) {
+            e.preventDefault();
+            var form=newModel.find('form');
+            var formObj={};
+            if (form[0].checkValidity()){
+                var inputs=form.serializeArray();
+                $.each(inputs, function (i, input) {
+                    formObj[input.name] = input.value;
+                });
+                $.ajax({
+                    url: formUrl,
+                    type: 'post',
+                    async: true,
+                    data: formObj,
+                    error: function(jqXHR, textStatus, errorThrown) {
+
+                        var error = jqXHR.responseJSON || jqXHR.responseText;
+                        if(!error.message)console.log('ere',error);
+                        if(textStatus=='error')
+                           newModel.find('div.msg').html('<div class="alert alert-error alert-dismissible fade in">'+
+                               errorThrown+' : '+error.message +'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                           '  <span aria-hidden="true">&times;</span>\n' +
+                           '</button></div>');
+                    },
+                    success: function(data, textStatus, jqXHR){
+                        if(data.hasOwnProperty('msg'))
+                        newModel.find('div.msg').html('<div class="alert alert-success alert-dismissible fade in">'+data.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                            '  <span aria-hidden="true">&times;</span>\n' +
+                            '</button></div>');
+                        ajaxtable.ajax.reload();
+                    },
+                });
+            }else{newModel.find('.msg').html('<div class="alert alert-error alert-dismissible fade in">Form Not Valid<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                '  <span aria-hidden="true">&times;</span>\n' +
+                '</button></div>');}
+        });
+
+        $('#exampleajax tbody').on( 'click', 'button.update', function () {
+            var data = ajaxtable.row( $(this).parents('tr') ).data();
+            var inputs=upModel.find('form input');
+            // inputs.each(function (index) {this.value=data[2+index];});
+            // alert(data);
+            updateForm.find('input[name="aid"]').val(data[1]);   //aid
+            updateForm.find('input[name="name"]').val(data[2]);   //name
+            updateForm.find('select[name="quantity"]').val(data[3]);  //quantity
+            // updateForm.find('select option[value="'+data[1]+'"]').attr("selected",true);
+            upModel.modal('show');
+        });
+        updateForm.on('submit',function (e) {
+            e.preventDefault();
+            var form=upModel.find('form');
+            var formObj={};
+            if (form[0].checkValidity()){
+                var inputs=form.serializeArray();
+                $.each(inputs, function (i, input) {
+                    formObj[input.name] = input.value;
+                });
+                $.ajax({
+                    url: formEditUrl,
+                    type: 'post',
+                    async: true,
+                    data: formObj,
+                    error: function(jqXHR, textStatus, errorThrown) {
+                        if(jqXHR.responseJSON!==undefined) upModel.find('div.msg').html('<div class="alert alert-error alert-dismissable fade in">'+
+                            jqXHR.responseJSON.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                            '  <span aria-hidden="true">&times;</span>\n' +
+                            '</button></div>');
+                    },
+                    success: function(data, textStatus, jqXHR){
+                        if(data.hasOwnProperty('msg'))
+                            upModel.find('div.msg').html('<div class="alert alert-success alert-dismissible fade in">'+data.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                                '  <span aria-hidden="true">&times;</span>\n' +
+                                '</button></div>');
+                        ajaxtable.ajax.reload();
+                    },
+                });
+            }else{newModel.find('.msg').html('<div class="alert alert-error alert-dismissible fade in">Form Not Valid<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                '  <span aria-hidden="true">&times;</span>\n' +
+                '</button></div>');}
+        });
+
+        $('#exampleajax tbody').on( 'click', 'button.delete', function () {
+            var data = ajaxtable.row( $(this).parents('tr') ).data();
+            ajaxActoins(data[2],'delete');
+        });
+        $('#exampleajax tbody').on( 'click', 'button.restore', function () {
+            var data = ajaxtable.row( $(this).parents('tr') ).data();
+            ajaxActoins(data[2],'restore');
+        });
+    });
+</script>
+
+
+<script>
+    var ajaxtable = $('#exampleajax').DataTable({
+        "ajax": tableajaxUrl,
+        // "columns": [
+        //     { "data": "_id" },
+        //     { "data": "text" },
+        //     { "data": "symbol" },
+        //     { "data": "unitof" },
+        //     { "data": "type" },
+        // ],
+        columnDefs:[
+            {
+                "targets": [ 1 ],
+                "visible": false,
+                "searchable": false
+            },
+            // {
+            //     "targets": [ 2 ],
+            //     "visible": false,
+            //     "searchable": false
+            // },
+            //  {
+            //     "targets": -1,
+            //     "data": null,
+            //     "defaultContent": "<button class='update'>update</button><button class='delete'>Delete</button>"
+            // }
+        ],
+    });
+
+</script>
+    <%- include('../../template/foot'); -%>

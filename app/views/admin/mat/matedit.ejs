@@ -1,0 +1,45 @@
+<%- include('../template/head'); -%>
+
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Material Edit
+            <small>Here Admin can do changes to Materials</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+            <li class="active">Here</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content container-fluid">
+
+        <div class="row">
+            <div class="col-md-offset-3 col-md-5">
+                <form method="post">
+                    <div class="form-group has-feedback">
+                        <input type="text" name="name" class="form-control" placeholder="Full Name" value="<%= name %>" >
+                        <span class="glyphicon glyphicon-info-sign form-control-feedback"></span>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary btn-block btn-flat">Save changes</button>
+                        </div>
+                        <!-- /.col -->
+                    </div>
+                </form>
+
+            </div>
+        </div>
+
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<%- include('../template/foot'); -%>

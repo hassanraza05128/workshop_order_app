@@ -1,0 +1,581 @@
+<%- include('../../template/head'); -%>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>RawProduct Settings
+            <small>Here we can see all registered RawProducts</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+            <li class="active">Here</li>
+        </ol>
+    </section>
+
+    <!-- Main content -->
+    <section class="content ">
+        <div class="row" id="msg">
+        </div>
+        <div class="row">
+            <div class="col-xs-12">
+                <div class="box">
+                    <div class="box-header">
+                    <!--<h3 class="box-title "></h3>-->
+                        <div class=" col-md-offset-4 col-md-2">
+                            <button type="button" class="btn btn-primary btn-block" data-toggle="modal" data-target="#newformModel" >Add new</button>
+                        </div>
+                    </div>
+                    <!-- /.box-header -->
+                    <div class="box-body  ">
+
+                        <table id="exampleajax" class="table  table-responsive table-hover ">
+                            <thead>
+
+                                <tr>
+                                    <th>Srno</th>
+                                    <th>paraid</th>
+                                    <th>unitid</th>
+                                    <th>Name</th>
+                                    <th>Unit</th>
+                                    <th>Actions</th>
+                                </tr>
+
+                            </thead>
+
+                            <tbody id="productTable">
+
+
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Srno</th>
+                                    <th>paraid</th>
+                                    <th>unitid</th>
+                                    <th>Name</th>
+                                    <th>Unit</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                    <!-- /.box-body -->
+                </div>
+                    <!-- /.box -->
+            </div>
+        </div>
+    </section>
+
+<!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+<script type="text/javascript">
+
+        var getPropListItem=function(index,propt,propid,value){
+            return list=''
+            +'<li data-index="'+index+'">'
+            +   '<div class="form-inline">'
+            +      '<input name="propertytext['+index+']" readonly class="form-control" value="'+propt+'">'
+            +      '<input name="property['+index+']" type="hidden" required value="'+propid+'">'
+            +      '<input type="text" name="value['+index+']" required class="form-control" placeholder="Value" value="'+value+'" >'
+            +      '<div class="btn btn-danger form-control removePropListItemButton" onclick="removeThisPropListItem(this)" >&times;</div>'
+            +   '</div>'
+            +'</li>';
+        };
+        var notifierString=function(error,type='unsuccess'){
+            var msg_class=(type==='unsuccess')?'alert-error':'alert-success';
+            var msg=(type==='unsuccess')?error.name?error.name+' : ':''+error.message : error.message;
+            return ''
+            +'<div class="alert '+msg_class+' alert-dismissible fade in" data-dismiss="alert"  >'
+            +   msg 
+            +   '<button type="button" class="close" data-dismiss="alert" aria-label="Close">' 
+            +       '<span aria-hidden="true">&times;</span>' 
+            +   '</button>'
+            +'</div>';
+        }
+</script>
+    
+<script>
+    var propInitUrl='/admin/units_list_';
+    var paramInitUrl='/admin/parameters_list';
+
+    var tableajaxUrl='/admin/raws_ajax';
+    var unitsajaxUrl='/admin/unitsajax';
+    var formUrl='/admin/raw_reg_ajax';
+    var formEditUrl='/admin/raw_update_ajax';
+    var delUrl='/admin/raw_action_ajax';
+
+    var Parameters_data = [
+            {id: 0, text: 'tes1param1'},
+            {id: 1, text: 'testparam2'},
+            {id: 2, text: 'testparam3'},
+        ];
+    var Properties_data=[
+            {id: 0, text: 'testprop1'},
+            {id: 1, text: 'testprop2'},
+            {id: 2, text: 'testprop3'},
+        ];
+    var Selected_Parameters=[];
+    var propertySets=[];
+
+    var Selected_Properties=[];
+    var Unselected_prop=[];
+    var propindex=-1;
+    var prop_formsub=true;
+    var removeThisPropListItem=function(){};
+     removeThisPropListItem =function(elm){
+            var li=$(elm).closest('li');
+            var index=li.data('index');
+            var prop=Selected_Properties.find(function(elm){ return elm.index == index});
+            // console.log(prop);
+            if(prop){
+                Selected_Properties=Selected_Properties.filter(function(elm){return elm.index!=index});
+                Unselected_prop.push({id:prop.id,text:prop.text});
+                UnselectedOptionUpdate();
+                li.remove();
+            }
+        };
+
+    Unselected_prop=Properties_data;//temporary before ajax set
+
+    $(document).ready(function() {
+
+        var newModel=$('#newformModel');
+        var newForm=$('#newform');
+        var updateForm=$('#updateform');
+        var upModel=$('#formModelUpdate');
+        var propModel=$('#propNewModel');
+        var select_field=$('#select-fixed-single-for-properties');
+        var propNewModelForm=$('#propNewModelForm');
+
+         // page global init block
+        $.ajax({url: paramInitUrl,type: 'POST',async: true,success: function(data, textStatus, jqXHR){Parameters_data=data.data;},});
+        $.ajax({url: propInitUrl,type: 'POST',async: true,success: function(data, textStatus, jqXHR){Unselected_prop=Properties_data=data.data;},});
+        $('#costbySelect').change(function(){var block=$('#CostByChangesBlock');if(this.value==='parameters')block.hide();else block.show();});
+        
+       
+        $('#propNewModelForm .removePropListItemButton').on('click',removeThisPropListItem(this));
+
+        var UnselectedOptionUpdate=function(){
+            var select=$('#select-fixed-single-for-properties');
+            select.children('option').remove();
+            Unselected_prop.forEach(function(prop,index){
+                select.append($('<option></option>').val(prop.id).html(prop.text));
+            });
+        };
+
+        //propertyset waly model k liaye code
+        propModel.on('shown.bs.modal',function(e){UnselectedOptionUpdate()});
+        // temperay form for property push into list
+        $('#propAddingForm').on('submit', function(e){
+            e.preventDefault();
+            var formdata0=$(this).serializeArray();
+           if(formdata0){
+               // console.log(formdata0);
+               var propt=Properties_data.find(function(currentValue){return currentValue.id==formdata0[0].value});
+               var propvalue=formdata0[1].value;
+               if(propt){
+                ++propindex;
+                Selected_Properties.push( Object.assign(
+                {   index:propindex,
+                    propvalue:propvalue},
+                    Unselected_prop.find(function(elm){return elm.id==propt.id})));
+                Unselected_prop=Unselected_prop.filter(function(elm){return elm.id!=propt.id});
+                UnselectedOptionUpdate();
+                propNewModelForm.find('ol').append(getPropListItem(propindex,propt.text,propt.id,propvalue));
+                }
+            }
+            return false;
+        }); 
+         propNewModelForm.on('submit',function(e){
+            e.preventDefault();
+            if(this.checkValidity()){
+                propertySets.push(
+                    {properties:Selected_Properties.map(function(prop){delete prop.index;return prop}),
+                    cost:$(this).find('input[name="cost"]').val()}
+                    );
+                updete_property_set_list();
+                propModel.find('.msg').html(notifierString({message:'Property Set Successfully Added'},'success'));
+            }else{propModel.find('.msg').html(notifierString({message:'Form Validation Error'},'unsuccess'));}
+            return false;
+        });
+        ///propertyset waly model k liaye code
+
+
+        
+        //newrawproparty waly model k liaye code
+
+        var updete_property_set_list=function(){
+            var list=$('#propAccordianContentBlock').find('ol');
+            list.children('li').remove();
+            var content='';
+            propertySets.forEach(function(propertyset,key){
+                content=propertyset.properties.map(function(property){return property.text+'='+property.propvalue}).join(' | ');
+                list.append(ListStrOfPropSet(key, content, 'price:'+propertyset.cost+' Rs'));
+            });
+        };
+
+
+
+        newForm.on('submit',function (e) {
+            e.preventDefault();
+            var form=newModel.find('form');
+            var formObj={};
+            if (form[0].checkValidity()){
+                var inputs=form.serializeArray();
+                $.each(inputs, function (i, input) {
+                    formObj[input.name] = input.value;
+                });
+                $.ajax({
+                    url: formUrl,
+                    type: 'post',
+                    async: true,
+                    data: formObj,
+                    error: function(jqXHR, textStatus, errorThrown) {
+
+                        var error = jqXHR.responseJSON || jqXHR.responseText;
+                        if(!error.message)console.log('ere',error);
+                        if(textStatus=='error')
+                           newModel.find('div.msg').html('<div class="alert alert-error alert-dismissible fade in">'+
+                               errorThrown+' : '+error.message +'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                           '  <span aria-hidden="true">&times;</span>\n' +
+                           '</button></div>');
+                    },
+                    success: function(data, textStatus, jqXHR){
+                        if(data.hasOwnProperty('msg'))
+                        newModel.find('div.msg').html('<div class="alert alert-success alert-dismissible fade in">'+data.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                            '  <span aria-hidden="true">&times;</span>\n' +
+                            '</button></div>');
+                        ajaxtable.ajax.reload();
+                    },
+                });
+            }else{newModel.find('.msg').html('<div class="alert alert-error alert-dismissible fade in">Form Not Valid<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+                '  <span aria-hidden="true">&times;</span>\n' +
+                '</button></div>');}
+        });
+        ///newrawproparty waly model k liaye code
+
+        // var ajaxActoins=function (id,action) {
+        //     $.ajax({
+        //         url: delUrl,
+        //         type: 'POST',
+        //         async: true,
+        //         data: {aid:id,action:action},
+        //         error: function(jqXHR, textStatus, errorThrown) {
+        //             $('#msg').html('<div class="alert alert-error alert-dismissable fade in">'+
+        //                 jqXHR.responseJSON.msg+'</div>');
+        //         },
+        //         success: function(data, textStatus, jqXHR){
+        //             $('#msg').html('<div class="alert alert-success alert-dismissable fade in">'+data.msg+'</div>');
+        //             ajaxtable.ajax.reload();
+        //         },
+        //     });
+        // };
+        // $('#exampleajax tbody').on( 'click', 'button.update', function () {
+        //     var data = ajaxtable.row( $(this).parents('tr') ).data();
+        //     var inputs=upModel.find('form input');
+        //     // inputs.each(function (index) {this.value=data[2+index];});
+        //     inputs[0].value=data[2];   //aid
+        //     inputs[1].value=data[3];   //name
+        //      updateForm.find('select[name="unit"]').val(data[1]);  //unit
+        //     // updateForm.find('select option[value="'+data[1]+'"]').attr("selected",true);
+        //     upModel.modal('show');
+        // });
+        // updateForm.on('submit',function (e) {
+        //     e.preventDefault();
+        //     var form=upModel.find('form');
+        //     var formObj={};
+        //     if (form[0].checkValidity()){
+        //         var inputs=form.serializeArray();
+        //         $.each(inputs, function (i, input) {
+        //             formObj[input.name] = input.value;
+        //         });
+        //         $.ajax({
+        //             url: formEditUrl,
+        //             type: 'post',
+        //             async: true,
+        //             data: formObj,
+        //             error: function(jqXHR, textStatus, errorThrown) {
+        //                 if(jqXHR.responseJSON!==undefined) upModel.find('div.msg').html('<div class="alert alert-error alert-dismissable fade in">'+
+        //                     jqXHR.responseJSON.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+        //                     '  <span aria-hidden="true">&times;</span>\n' +
+        //                     '</button></div>');
+        //             },
+        //             success: function(data, textStatus, jqXHR){
+        //                 if(data.hasOwnProperty('msg'))
+        //                     upModel.find('div.msg').html('<div class="alert alert-success alert-dismissible fade in">'+data.msg+'<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+        //                         '  <span aria-hidden="true">&times;</span>\n' +
+        //                         '</button></div>');
+        //                 ajaxtable.ajax.reload();
+        //             },
+        //         });
+        //     }else{newModel.find('.msg').html('<div class="alert alert-error alert-dismissible fade in">Form Not Valid<button type="button" class="close" data-dismiss="alert" aria-label="Close">\n' +
+        //         '  <span aria-hidden="true">&times;</span>\n' +
+        //         '</button></div>');}
+        // });
+
+        // $('#exampleajax tbody').on( 'click', 'button.delete', function () {
+        //     var data = ajaxtable.row( $(this).parents('tr') ).data();
+        //     ajaxActoins(data[2],'delete');
+        // });
+        // $('#exampleajax tbody').on( 'click', 'button.restore', function () {
+        //     var data = ajaxtable.row( $(this).parents('tr') ).data();
+        //     ajaxActoins(data[2],'restore');
+        // });
+    });
+</script>
+
+
+
+
+
+
+
+<!-- Modal -->
+<div class=" modal " id="newformModel" role="dialog">
+    <div class="modal-dialog modal-lg modal-dialog-centered" >
+
+        <!-- Modal content-->
+        <div class=" modal-content ">
+            <div class="modal-header ">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">New</h4>
+                <div class="msg"></div>
+            </div>
+            <div class="modal-body ">
+                <form id="newform">
+                    <div class="form-group has-feedback">
+                        <input type="text" name="name" required class="form-control" placeholder="Name"  >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <select name="costby" id="costbySelect" required class="form-control"  >
+                            <option value="peritem" selected >By Per Item</option>
+                            <option value="parameters" selected >By Parameters</option>
+                        </select>
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div> 
+
+                    <div id="CostByChangesBlock" class="row container-fluid">
+                        <div class="col-xs-4 ">
+                            <h4>Parameters</h4>
+                       </div>
+                        <div class="col-xs-6">
+                            <select multiple="multiple" name="parameter[]" class="select-fixed-multiple-for-parameters"></select>
+                       </div>
+                    </div>
+
+                    <div class="accordion col-xs-12" id="propAccordion">
+                      <div class="accordion-group">
+                        <div class="accordion-heading ">
+                          <a class="accordion-toggle" data-toggle="collapse" data-parent="#propAccordion" href="#collapsepropOne">
+                            <div class="col-xs-10">Raw Properties</div>
+                            <button type="button" class=" col-xs-2 btn btn-sm btn-primary " data-toggle="modal" data-target="#propNewModel">+</button>
+                          </a>
+                        </div>
+                        <div id="collapsepropOne" class="accordion-body collapse in">
+                          <div class="accordion-inner" id="propAccordianContentBlock" >
+                           <ol>
+                            <!-- here comes propertyset list -->
+                              <!--   <li class="col-xs-12" data-index="">
+                                    <input type="hidden" name="properties[][property]:string">
+                                    <input type="hidden" name="properties[][value]:string">
+                                    <div class="col-xs-8">value+value+value</div> 
+                                    <div class="col-xs-2">500</div> 
+                                    <div class="col-xs-2">
+                                        <button class="btn-xs btn" onclick="Editprop(this)">Edit</button>
+                                        <button class="btn-xs btn" onclick="dellprop(this)">del</button>
+                                    </div>
+                                </li> -->
+
+                            </ol>
+                            <!-- <input type="hidden" name="properties[][value]:string"> -->
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                        
+                        
+                    <button class="btn btn-primary " type="submit" id="newButtonInModel">Add New</button>
+                </form>
+            </div>
+            <div class="modal-footer">
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+
+
+});
+</script>
+
+<!--MOdel propNewModel -->
+<div class="modal" id="propNewModel" role="dialog">
+    <div class="modal-dialog " >
+        <div class=" modal-content ">
+            <div class="modal-header ">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">New Raw Property</h4>
+                <div class="msg"></div>
+                <form class="form-inline" id="propAddingForm" >
+                  <div class="form-group ">
+                    <label for="propertytemp0">Property:</label>
+                    <select name="propertytemp0" required class="form-control" id="select-fixed-single-for-properties"></select>
+                  </div>
+                  <div class="form-group">
+                    <label for="value0">Value:</label>
+                    <input type="text" id="value0" name="value0" required class="form-control" placeholder="Value"  >
+                  </div>
+                  
+                  <button type="submit" class="btn btn-primary">Add to list</button>
+                </form>
+            </div>
+            <div class="modal-body ">
+                
+                <div id="collapsepropModelOne" class="accordion-body collapse in">
+                  <div class="accordion-inner" id="propAccordianModelContentBlock" >
+                    <form id="propNewModelForm" >
+                        <ol>
+                            <!-- plase where list appends -->
+                        </ol>
+                        <div class="form-inline">
+                            <div class="form-group">
+                                <label for="costid">Price:</label>
+                                <input type="text" id="costid" name="cost" required="required" class="form-control" placeholder="Price"  />
+                            </div>
+                        </div>
+                        <hr>
+                        <button class="btn btn-block btn-warning">ADD Property Set</button>
+                    </form>
+                  </div>
+                </div>
+               
+            </div>
+            <div class="modal-footer modal-close"></div>
+
+        </div>
+
+    </div>
+</div>
+<!-- /MOdel propNewModel -->
+
+
+
+
+<!-- Modal --
+<div class="modal" id="formModelUpdate" role="dialog">
+    <div class="modal-dialog " >
+        <div class=" modal-content ">
+            <div class="modal-header ">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Update</h4>
+                <div class="msg"></div>
+            </div>
+            <div class="modal-body ">
+                <form id="updateform">
+                    <input type="hidden" name="aid">
+                    <div class="form-group has-feedback">
+                        <input type="text" name="name" required class="form-control" placeholder="Name"  >
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+                    <div class="form-group has-feedback">
+                        <select name="unit" id="" required class="form-control" >
+                            <option selected disabled>Unit</option>
+                        </select>
+                        <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                    </div>
+
+                    <button class="btn btn-primary " type="submit" id="updateButtonInModel">Update</button>
+                </form>
+            </div>
+            <div class="modal-footer modal-close"></div>
+
+        </div>
+
+    </div>
+</div>
+
+<script>
+    var ajaxtable = $('#exampleajax').DataTable({
+        "ajax": tableajaxUrl,
+        // "columns": [
+        //     { "data": "_id" },
+        //     { "data": "text" },
+        //     { "data": "symbol" },
+        //     { "data": "unitof" },
+        //     { "data": "type" },
+        // ],
+        columnDefs:[
+            {
+                "targets": [ 1 ],
+                "visible": false,
+                "searchable": false
+            },
+            {
+                "targets": [ 2 ],
+                "visible": false,
+                "searchable": false
+            },
+            //  {
+            //     "targets": -1,
+            //     "data": null,
+            //     "defaultContent": "<button class='update'>update</button><button class='delete'>Delete</button>"
+            // }
+        ],
+    });
+
+</script> -->
+<script type="text/javascript">
+
+// var ListStrOfParam = function(index, content){
+//    return ''
+//     +'<li class="col-xs-12" data-index="'+index+'">'
+//     +    '<div class="col-xs-9">'+content+'</div>' 
+//     +    '<div class="col-xs-2">'
+//     +      '<button class="btn-xs btn" onclick="dellParam(this)">del</button>'
+//     +    '</div>'
+//     +'</li>';
+// };
+var ListStrOfPropSet = function(index, content, cost){
+   return ''
+    +'<li class="col-xs-12" data-index="'+index+'">'
+    +    '<div class="col-xs-8">'+content+'</div>' 
+    +    '<div class="col-xs-2">'+cost+'</div>' 
+    +    '<div class="col-xs-2">'
+    +      '<button class="btn-xs" type="button" onclick="Editprop(this)">Edit</button>'
+    +      '<button class="btn-xs" type="button" onclick="dellprop(this)">del</button>'
+    +    '</div>'
+    +'</li>';
+};
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+  
+
+
+
+    // $("#select-fixed-single-for-properties").select2({minimumResultsForSearch: Infinity,placeholder: "Select a Property",data: Properties_data,});
+ $(".select-fixed-multiple-for-parameters").select2({
+       // minimumInputLength: 3,
+        minimumResultsForSearch: Infinity,
+        //width: 400,
+        //containerCssClass: 'bg-teal-400',
+        placeholder: "Select a Parameter",
+        maximumSelectionSize: 3,
+        maximumSelectionLength: 3,
+        tags:false,
+        data: Parameters_data,
+    }); 
+
+
+});
+</script>
+
+    <%- include('../../template/foot'); -%>

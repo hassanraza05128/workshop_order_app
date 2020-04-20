@@ -1,0 +1,455 @@
+<%- include('../template/head'); -%>
+
+<script>
+    var Sellby_peritem_block = $($.parseHTML(
+        '<div id="sellby_peritem_block">' +
+        '   <div class="col-md-4">' +
+        '      <label for="type">Cost Per Unit Product:</label>' +
+        '      <div class="form-group has-feedback">' +
+        '      <input type="number" name="cost" required="true"  class="form-control" placeholder="00.00"  />' +
+        '      <span class="glyphicon glyphicon-book form-control-feedback"></span>' +
+        '       </div>' +
+        '   </div>' +
+        '</div>', $('#form-product').get(0),true ));
+
+    var Sellby_parametermultiple_block=$($.parseHTML(''+
+        '<div id="sellby_parametermultiple_block">' +
+        '  <div class="col-md-7">' +
+        '    <label for="type">Parameters:</label>' +
+        '    <select multiple="multiple" required="true" name="parameter[]" id="select-fixed-multiple-for-parameters"></select>' +
+        '  </div>'+
+        '  <div class="col-md-5">' +
+        '    <label for="type">Cost (Multiple Of Parameters):</label>' +
+        '    <div class="form-group has-feedback">' +
+        '      <input type="number" name="cost" required="true"  class="form-control" placeholder="00.00"  />' +
+        '      <span class="glyphicon glyphicon-book form-control-feedback"></span>' +
+        '    </div>' +
+        '  </div>'+
+        '</div>'/*+
+                        "<script type='text/javascript'>$('#select-fixed-multiple-for-parameters').select2({minimumResultsForSearch: Infinity,placeholder: 'Select a Parameter',maximumSelectionSize: 3,maximumSelectionLength: 3,tags:false,data: Parameters_data,});</ script>"
+                        */, $('#form-product').get(0), true));
+
+    var Sellby_rawsum_block=$($.parseHTML(''+
+        '<div id="sellby_parametermultiple_block">' +
+        '  <div class="col-md-7">' +
+        '    <label for="type">Parameters:</label>' +
+        '    <select multiple="multiple" required name="parameter[]" id="select-fixed-multiple-for-parameters"></select>' +
+        '  </div>'+
+       /* '  <div class="col-md-5">' +
+        '    <label for="type">Cost (Multiple Of Parameters):</label>' +
+        '    <div class="form-group has-feedback">' +
+        '      <input type="text" name="cost" required  class="form-control" placeholder="00.00"  />' +
+        '      <span class="glyphicon glyphicon-book form-control-feedback"></span>' +
+        '    </div>' +
+        '  </div>'+*/
+       'pending part where need to handle rawitem effect w.r.t parameters '+
+        '</div>', $('#form-product').get(0), true));
+
+
+    var paramInitUrl='/admin/parameters_list_ajax';
+    var Parameters_data = [
+        // {id: 0, text: "tes1param1"},
+        // {id: 1, text: "testparam2"},
+        // {id: 2, text: "testparam3"},
+    ];
+    $.ajax({url: paramInitUrl,type: 'GET',async: true,success: function(data, textStatus, jqXHR){Parameters_data=data.data;},});
+
+    var Select2parameters={
+        // minimumInputLength: 1,
+        minimumResultsForSearch: Infinity,
+        // width: 400,
+        // containerCssClass: 'bg-teal-400',
+        placeholder: "Select a Parameter",
+        maximumSelectionSize: 3,
+        maximumSelectionLength: 4,
+        tags:false,
+        /* data: Parameters_data,*/
+    };
+</script>
+
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+    <section class="content-header">
+        <h1>
+            Product Registration
+            <small>Here we Register new Product</small>
+        </h1>
+        <ol class="breadcrumb">
+            <li><a href="#"><i class="fa fa-dashboard"></i> Level</a></li>
+            <li class="active">Here</li>
+        </ol>
+    </section>
+    <!-- Main content -->
+    <section class="content container-fluid">
+        <div class="row" id="msg">
+            <p><%= msg %></p>
+        </div>
+        <form id="form-product" method="post" >
+        <div class="row">
+            <div class="col-md-4">
+                <label for="type">Add Name:</label>
+                <div class="form-group has-feedback">
+                    <input type="text" name="name" required  class="form-control" placeholder="New Product Name" value="<%= old_name %>" />
+                    <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                </div>
+            </div>
+
+            <div class=" col-md-2">
+                <div class="form-group ">
+                  <label for="material">Select Material:*</label>
+                  <select name="material" class="form-control" required id="material" >
+                  <% for(var i=0; i < materials.length; i++) {  %>
+                  <option value="<%= materials[i]._id %>" <%= (old_material===materials[i])?'selected':'' %>>
+                      <%= materials[i].name %>
+                  </option>
+                  <% } %>
+                  </select>
+                </div>
+            </div>
+
+            <div class="col-md-2">
+                <div class="form-group ">
+                    <label for="type">Select type:*</label>
+                    <select name="type" class="form-control" required id="type" >
+                    <% for(var i=0; i < types.length; i++) {  %>
+                    <option value="<%= types[i]._id %>" <%= (old_type===types[i])?'selected':'' %>>
+                        <%= types[i].name %>
+                    </option>
+                    <% } %>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <label for="type">Add Discription:</label>
+                <div class="form-group has-feedback">
+                    <textarea name="discription" id="" rows="1" class="form-control" placeholder="Discription"><%= old_discription %></textarea>
+                    <span class="glyphicon glyphicon-book form-control-feedback"></span>
+                </div>
+            </div>
+        </div>
+            <section class="container-fluid">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group ">
+                            <label for="sellby">Select Sell Procedure:*</label>
+                            <select name="sellby" class="form-control" required id="sellby" >
+                                <option selected disabled>sellby</option>
+                                <option value="peritem">Cost as PerItem Price</option>
+                                <option value="parametermultiple"> Cost as multiple of patamenters (length*breath)</option>
+                                <option value="rawsum"> Cost by Selected RawProduct sum</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row" id="sellbyhandleblock">
+
+                    <div id="sellby_rawsum_block">
+                    </div>
+                 </div>
+                <script>
+                    var Sellby=$('#sellby');
+                    var Sellbyhandleblock=$('#sellbyhandleblock');
+                    Sellby.on('change',function (e) {
+                        switch (e.target.value) {
+                            case 'peritem':
+                                Sellbyhandleblock.html(Sellby_peritem_block.html());
+                                break;
+                            case 'parametermultiple':
+                                Sellbyhandleblock.html(Sellby_parametermultiple_block.html());
+                                $("#select-fixed-multiple-for-parameters").select2(Object.assign(Select2parameters,{ data: Parameters_data}));
+                                break;
+                            case 'rawsum':
+                               Sellbyhandleblock.html(Sellby_rawsum_block.html());
+                                $("#select-fixed-multiple-for-parameters").select2(Object.assign(Select2parameters,{ data: Parameters_data}));
+
+                                break;
+                            default:
+                                Sellbyhandleblock.html(Sellby_peritem_block.html());
+                        }
+                    });
+
+                </script>
+            </section>
+        </form>
+        <div class="row">
+            <div class="col-md-12">
+                <input type="file" class="file-input-files" multiple="multiple">
+            </div>
+        </div>
+            <hr>
+
+
+        <div class="row">
+            <div class="col-md-offset-1 col-md-7">
+                <button id="submit-button-product" class="btn btn-primary btn-block " type="submit"  form="form-product" >Register New Product</button>
+            </div>
+            <div class="col-md-offset-1 col-md-3">
+                <button id="reset-button-product" class="btn btn-warning btn-block ">RESET</button>
+            </div>
+        </div>
+
+
+    </section>
+    <!-- /.content -->
+</div>
+<!-- /.content-wrapper -->
+
+<script>
+    var productID=null;
+    var formUrl='/admin/productreg';
+    var uploadUrl='/admin/contentreg';
+    // custom
+    $(function () {
+        // Modal template
+        var modalTemplate = '<div class="modal-dialog modal-lg" role="document">\n' +
+            '  <div class="modal-content">\n' +
+            '    <div class="modal-header">\n' +
+            '      <div class="kv-zoom-actions btn-group">{toggleheader}{fullscreen}{borderless}{close}</div>\n' +
+            '      <h6 class="modal-title">{heading} <small><span class="kv-zoom-title"></span></small></h6>\n' +
+            '    </div>\n' +
+            '    <div class="modal-body">\n' +
+            '      <div class="floating-buttons btn-group"></div>\n' +
+            '      <div class="kv-zoom-body file-zoom-content"></div>\n' + '{prev} {next}\n' +
+            '    </div>\n' +
+            '  </div>\n' +
+            '</div>\n';
+
+        // Buttons inside zoom modal
+        var previewZoomButtonClasses = {
+            toggleheader: 'btn btn-default btn-icon btn-xs btn-header-toggle',
+            fullscreen: 'btn btn-default btn-icon btn-xs',
+            borderless: 'btn btn-default btn-icon btn-xs',
+            close: 'btn btn-default btn-icon btn-xs'
+        };
+
+        // Icons inside zoom modal classes
+        var previewZoomButtonIcons = {
+            prev: '<i class="icon-arrow-left32"></i>',
+            next: '<i class="icon-arrow-right32"></i>',
+            toggleheader: '<i class="icon-menu-open"></i>',
+            fullscreen: '<i class="icon-screen-full"></i>',
+            borderless: '<i class="icon-alignment-unalign"></i>',
+            close: '<i class="icon-cross3"></i>'
+        };
+
+        // File actions
+        var fileActionSettings = {
+            showUpload: true,
+            zoomClass: 'btn btn-link btn-xs btn-icon',
+            zoomIcon: '<i class="icon-zoomin3"></i>',
+            dragClass: 'btn btn-link btn-xs btn-icon',
+            dragIcon: '<i class="icon-three-bars"></i>',
+            removeClass: 'btn btn-link btn-icon btn-xs',
+            removeIcon: '<i class="icon-trash"></i>',
+            indicatorNew: '<i class="icon-file-plus text-slate"></i>',
+            indicatorSuccess: '<i class="icon-checkmark3 file-icon-large text-success"></i>',
+            indicatorError: '<i class="icon-cross2 text-danger"></i>',
+            indicatorLoading: '<i class="icon-spinner2 spinner text-muted"></i>'
+        };
+
+        var fileuploader=$(".file-input-files");
+        var pform=$('#form-product');
+        // var subButton=$('#submit-button-product');
+        var resetButton=$('#reset-button-product');
+
+        var addProductId=function (data) {
+            productID=data.product._id;
+            //console.log('product id stored in productID');
+        };
+
+        var ajaxUnsucessCallback=function (jqXHR, textStatus, errorThrown) {
+            var msg = 'An error has occurred' + ' : ' + jqXHR.responseJSON.msg;
+            $('#msg').html("<div class='alert alert-danger alert-dismissable fade in'><strong>"+msg+"</strong></div>");
+            // alert(msg);
+            // console.log('form ajax error :'+textStatus+errorThrown,jqXHR.responseJSON.msg);
+        };
+        var ajaxSucessCallback=function (data, textStatus, jqXHR) {
+            addProductId(data);
+            var msg='<p>Success' + '</p>';
+            $('#msg').html("<div class='alert alert-success alert-dismissable fade in'><strong>"+data.msg+"</strong><br></div>");
+            //console.log('form submit success with:',data);
+            fileuploader.fileinput('upload');
+        };
+
+        $('#form-product').on('submit',function (e) {
+            e.preventDefault();
+           // apply js validation here ( pending )
+
+            // check if already submited a product
+            if(productID!==null){
+                var msg='Already registered a product. Press Reset button to Add new Product';
+                $('#msg').html("<div class='alert alert-warning alert-dismissable fade in'><strong>"+msg+"</strong></div>");
+                //alert(msg);
+                // console.log('form already there in variable')
+                return true;}
+
+            if(!this.checkValidity()){
+                $('#msg').html("<div class='alert alert-danger alert-dismissable fade in'><strong>Form validity error has occurred</strong></div>");
+                //console.log('form not valid');
+                return ;
+            }
+
+            // check form validity
+            var inputs=$(this).serializeArray();
+
+            // console.log('form is valid and about to submit');
+            $.ajax({
+                url: formUrl,
+                type: 'POST',
+                async: true,
+                data: inputs,
+                error: ajaxUnsucessCallback,
+                // dataType: 'jsonp',
+                success: ajaxSucessCallback,
+            });
+
+            // console.log('File success form ajax ', productID);
+
+        });
+
+
+
+        fileuploader.on('filepreajax',function (event, previewId, index) {
+            if(productID===null) {
+                // prodSubmit();
+                $('#form-product').trigger('submit');
+                return {message: "Project not yet registered",data:{}};
+            }
+        });
+
+        // subButton.on('click', prodSubmit);
+        //reset form to value null
+        resetButton.on('click', function (e) {
+            fileuploader.fileinput('clear').fileinput('reset');
+            // pform[0].reset();
+            $('#form-product').get(0).reset();
+            productID=null;
+            $('#select-fixed-multiple-for-parameters').val(null).trigger('change');
+            $('#msg').html("<div class='alert alert-success alert-dismissable fade in'><strong>Product Register Panel has Reset For new Product to be  Entered</strong></div>");
+        });
+
+        fileuploader.fileinput({
+            uploadUrl: uploadUrl, // server upload action
+            uploadAsync: true,
+            maxFileCount: 100,
+            browseLabel: 'Browse',
+            browseOnZoneClick:true,
+            showBrowse:true,
+            showUpload:true,
+            showCancel:true,
+            dropZoneEnabled:true,
+            required:true,
+            mergeAjaxCallbacks:false,
+            //ajaxSettings:{},
+            browseIcon: '<i class="icon-file-plus"></i>',
+            uploadIcon: '<i class="icon-file-upload2"></i>',
+            removeIcon: '<i class="icon-cross3"></i>',
+            // layoutTemplates: {
+            //     icon: '<i class="icon-file-check"></i>',
+            //     modal: modalTemplate
+            // },
+            layoutTemplates: {
+                icon: '<i class="icon-file-check"></i>',
+                main1: "{preview}\n" +
+                "<div class='input-group {class}'>\n" +
+                "   <div class='input-group-btn'>\n" +
+                "       {browse}\n" +
+                "   </div>\n" +
+                "   {caption}\n" +
+                "   <div class='input-group-btn'>\n" +
+                "       {upload}\n" +
+                "       {remove}\n" +
+                "   </div>\n" +
+                "</div>",
+                modal: modalTemplate
+            },
+            initialPreview: [],
+            initialPreviewConfig: [],
+            maxFilesNum: 10,
+            maxFileSize:25*1024,//25Mb
+            //minFileSize:0,
+            //allowedPreviewTypes:['image'],
+            allowedFileExtensions: ["jpg", "gif", "png"],
+            initialPreviewAsData: true,
+            overwriteInitial: true,
+            initialCaption: "Add Images To This Product",
+            previewZoomButtonClasses: previewZoomButtonClasses,
+            previewZoomButtonIcons: previewZoomButtonIcons,
+            fileActionSettings: fileActionSettings,
+            uploadExtraData: function (previewId, index) {
+                // console.log('productID:'+productID);
+                // return (productID!==null)? {productID:productID}:{};
+                return {productID:productID};
+            },
+        });
+
+// .on('filepreupload',function (event, data, previewId, index) {
+//     // if(!data.extra.productId) {
+//     //     event.isDefaultPrevented();
+//     // }
+//     console.log('File pre upload triggered: ',data.extra.productID);
+// });
+
+
+
+        /* var ajaxProductForm=function () {
+           var formObj = {};
+           var inputs=[];
+           // check if already submited a product
+           if(productID!==null){
+               var msg='Already registered a product. Press Reset button to Add new Product';
+               $('#msg').html("<div class='alert alert-warning alert-dismissable fade in'><strong>"+msg+"</strong></div>");
+               //alert(msg);
+               // console.log('form already there in variable')
+               return true;}
+
+           // check form validity
+           if (formValid){
+               inputs=pform.serializeArray();
+               /!*$.each(inputs, function (i, input) {
+                   formObj[input.name] = input.value;
+               });*!/
+
+               console.log(inputs);
+
+               //here i ll handle my triple cost structure query
+               //i ll add coostby form elements
+
+
+
+
+
+
+               // console.log('form is valid and about to submit');
+               var res = $.ajax({
+                   url: formUrl,
+                   type: 'POST',
+                   async: true,
+                   data: inputs,
+                   error: ajaxUnsucessCallback,
+                   // dataType: 'jsonp',
+                   success: ajaxSucessCallback,
+               });
+               // console.log('File success form ajax ', productID);
+               return true;
+           }else{
+               $('#msg').html("<div class='alert alert-danger alert-dismissable fade in'><strong>Form validity error has occurred</strong></div>");
+               //console.log('form not valid');
+               return false;}
+       };*/
+        /*var prodSubmit=function(){
+            if(productID===null) {
+                if (ajaxProductForm())
+                    fileuploader.fileinput('upload');
+            }else{fileuploader.fileinput('upload');}
+        };*/
+
+
+    });
+</script>
+
+<%- include('../template/foot'); -%>

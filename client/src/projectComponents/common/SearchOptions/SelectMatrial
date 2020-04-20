@@ -1,0 +1,23 @@
+import React, { Component } from "react";
+// import PropTypes from "prop-types";
+import { withStyles } from "@material-ui/core/styles";
+import makeAnimated from "react-select/lib/animated";
+import Select from "react-select";
+const styles = {};
+
+function SelectMatrial(props) {
+  return (
+    <Select
+      closeMenuOnSelect={false}
+      components={makeAnimated()}
+      // defaultValue={[colourOptions[4], colourOptions[5]]}
+      isMulti={false}
+      options={props.materials.map(v => {
+        return { value: v._id, label: v.name };
+      })}
+      placeholder={"Material"}
+    />
+  );
+}
+
+export default withStyles(styles)(SelectMatrial);
